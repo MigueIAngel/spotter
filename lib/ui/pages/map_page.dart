@@ -1,4 +1,6 @@
+import 'package:f_firebase_202210/data/model/events.dart';
 import 'package:f_firebase_202210/ui/controllers/authentication_controller.dart';
+import 'package:f_firebase_202210/ui/controllers/firestore_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
@@ -23,6 +25,8 @@ class _MapScreenState extends State<MapScreen> {
   final fecha = TextEditingController();
   final name = TextEditingController();
   final description = TextEditingController();
+  FirestoreController firestoreController = Get.find();
+
   Future<Position> determinePosition() async {
     LocationPermission permission;
 
@@ -53,6 +57,32 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  void _showMarkerDetails(Evento evento) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(evento.nombre),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Fecha: ${evento.fecha}'),
+              Text('Descripción: ${evento.descripcion}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void moveToCurrentLocation() async {
     Position position = await determinePosition();
     mapController.move(LatLng(position.latitude, position.longitude), 18);
@@ -62,6 +92,12 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     getCurrentLocation();
     super.initState();
+    firestoreController.start();
+    loadMarkersFromDatabase();
+  }
+
+  Future<void> _saveEvent(Evento e) async {
+    await firestoreController.saveEvent(e);
   }
 
   List<Marker> markerss = [];
@@ -80,8 +116,40 @@ class _MapScreenState extends State<MapScreen> {
         }).then((pickedDate) {
       if (pickedDate != null) {
         fecha.text =
-            '${pickedDate!.day}/${pickedDate!.month}/${pickedDate!.year}';
+            '${pickedDate!.year}-${pickedDate!.month}-${pickedDate!.day}';
       }
+    });
+  }
+
+  Future<void> loadMarkersFromDatabase() async {
+    DateTime currentDate = DateTime.now();
+
+    List<Evento> events = await firestoreController.getAll();
+    List<Marker> filteredMarkers = [];
+
+    for (Evento evento in events) {
+      DateTime eventDate = DateTime.parse("${evento.fecha} 00:00:00.000000");
+      if (eventDate.isAfter(currentDate) ||
+          eventDate.isAtSameMomentAs(currentDate)) {
+        filteredMarkers.add(
+          Marker(
+            point: LatLng(
+              double.parse(evento.ubicacion.split(',')[0]),
+              double.parse(evento.ubicacion.split(',')[1]),
+            ),
+            builder: (context) => InkWell(
+              onTap: () {
+                _showMarkerDetails(evento);
+              },
+              child: const Icon(Icons.place, color: Colors.red, size: 40),
+            ),
+          ),
+        );
+      }
+    }
+
+    setState(() {
+      markerss = filteredMarkers;
     });
   }
 
@@ -150,24 +218,35 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ],
           );
-        }).then((_) {
+        }).then((_) async {
       if (saved) {
         bool tooClose = false;
-        for (var m in markerss) {
-          double distance = calculateDistance(m.point, tappedPoint);
-          if (distance < 30) {
+        List<Evento> events = await firestoreController.getAll();
+        for (Evento evento in events) {
+          DateTime eventDate =
+              DateTime.parse("${evento.fecha} 00:00:00.000000");
+          String lat = evento.ubicacion.split(',')[0];
+          String lon = evento.ubicacion.split(',')[1];
+          double latitud = double.parse(lat);
+          double longitud = double.parse(lon);
+          double distance =
+              calculateDistance(LatLng(latitud, longitud), tappedPoint);
+          if (distance < 30 &&
+              eventDate.isAtSameMomentAs(
+                  DateTime.parse('${fecha.text} 00:00:00.000000'))) {
             tooClose = true;
-            break;
           }
         }
+
         if (!tooClose) {
           setState(() {
-            markerss.add(Marker(
-              point: tappedPoint,
-              builder: (context) => const Icon(Icons.place, color: Colors.red),
-            ));
+            Evento e = Evento(name.text, fecha.text, description.text,
+                '${tappedPoint.latitude},${tappedPoint.longitude}');
+            _saveEvent(e);
+            loadMarkersFromDatabase();
           });
         } else {
+          // ignore: use_build_context_synchronously
           showDialog(
               context: context,
               builder: (context) {

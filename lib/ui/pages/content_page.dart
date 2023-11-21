@@ -9,10 +9,9 @@ import '../widgets/chat_page.dart';
 import '../widgets/user_list_page.dart';
 
 class ContentPage extends StatefulWidget {
-  const ContentPage({super.key});
+  const ContentPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _ContentPageState createState() => _ContentPageState();
 }
 
