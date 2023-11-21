@@ -1,4 +1,4 @@
-#Mon Nov 20 21:05:42 COT 2023
+#Tue Nov 21 14:02:53 COT 2023
 base.0=C\:\\Users\\sebas\\OneDrive\\Escritorio\\f_firebase_202210-main\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
 base.1=C\:\\Users\\sebas\\OneDrive\\Escritorio\\f_firebase_202210-main\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes2.dex
 base.2=C\:\\Users\\sebas\\OneDrive\\Escritorio\\f_firebase_202210-main\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes3.dex
