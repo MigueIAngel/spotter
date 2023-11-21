@@ -19,9 +19,9 @@ class _ContentPageState extends State<ContentPage> {
   int _selectIndex = 0;
   AuthenticationController authenticationController = Get.find();
   static final List<Widget> _widgets = <Widget>[
-    const MapScreen(),
+    const UserListPage(),
     const ChatPage(),
-    const UserListPage()
+    const MapScreen()
   ];
 
   _onItemTapped(int index) {
@@ -42,7 +42,14 @@ class _ContentPageState extends State<ContentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("Welcome ${authenticationController.userEmail()}"),
+          backgroundColor: const Color.fromARGB(255, 77, 77, 160),
+          title: const Center(
+            child: Image(
+              image: AssetImage('assets/logoG.png'),
+              width: 100,
+              height: 100,
+            ),
+          ),
           actions: [
             IconButton(
                 icon: const Icon(
@@ -67,16 +74,16 @@ class _ContentPageState extends State<ContentPage> {
             color: Colors.white,
           ),
           Icon(
-            Icons.accessibility,
+            Icons.map,
             size: 35,
             color: Colors.white,
           ),
         ],
         height: 60,
         letIndexChange: (index) => true,
-        color: Theme.of(context).colorScheme.primary,
-        buttonBackgroundColor: const Color(0xFFF6A641),
-        backgroundColor: Colors.transparent.withOpacity(0),
+        color: const Color.fromARGB(255, 77, 77, 160),
+        buttonBackgroundColor: const Color.fromARGB(255, 196,167,125),
+        backgroundColor: const Color.fromARGB(0, 201, 16, 16).withOpacity(0),
         index: _selectIndex,
         animationCurve: Curves.easeInOut,
         animationDuration: const Duration(milliseconds: 170),

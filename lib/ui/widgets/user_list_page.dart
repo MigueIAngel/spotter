@@ -1,4 +1,5 @@
 import 'package:f_firebase_202210/ui/controllers/user_controller.dart';
+import 'package:f_firebase_202210/ui/widgets/event_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -28,7 +29,90 @@ class _UserListPageState extends State<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _list();
+    return Scaffold(
+      body: ListView(
+        children: [
+          GestureDetector(
+            onTap: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => EventInfoPage(index: 0)),
+              // );
+            },
+            child: const EventItem(
+                name: 'Concierto de Rock',
+                distance: '3 km',
+                image: 'assets/rock.jpeg',
+                index: 0),
+          ),
+          GestureDetector(
+            onTap: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => EventInfoPage(index: 0)),
+              // );
+            },
+            child: const EventItem(
+                name: 'Concierto de Rock',
+                distance: '3 km',
+                image: 'assets/rock.jpeg',
+                index: 1),
+          ),
+          GestureDetector(
+            onTap: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => EventInfoPage(index: 0)),
+              // );
+            },
+            child: const EventItem(
+                name: 'Concierto de Rock',
+                distance: '3 km',
+                image: 'assets/rock.jpeg',
+                index: 2),
+          ),
+          GestureDetector(
+            onTap: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => EventInfoPage(index: 0)),
+              // );
+            },
+            child: const EventItem(
+                name: 'Concierto de Rock',
+                distance: '3 km',
+                image: 'assets/rock.jpeg',
+                index: 3),
+          ),
+          GestureDetector(
+            onTap: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => EventInfoPage(index: 0)),
+              // );
+            },
+            child: const EventItem(
+                name: 'Concierto de Rock',
+                distance: '3 km',
+                image: 'assets/rock.jpeg',
+                index: 4),
+          ),
+          GestureDetector(
+            onTap: () {},
+            child: const EventItem(
+                name: 'Concierto de Rock',
+                distance: '3 km',
+                image: 'assets/rock.jpeg',
+                index: 5),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _item(AppUser element) {

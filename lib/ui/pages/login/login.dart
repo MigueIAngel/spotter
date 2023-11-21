@@ -123,79 +123,118 @@ class LoginPage extends StatelessWidget {
     emailController.text = "a@a.com";
     passwordController.text = "123456789";
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       body: SafeArea(
-        child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
-                validator: Validatorless.multiple([
-                  Validatorless.required('Email is required'),
-                  Validatorless.email('Invalid email'),
-                ]),
-                controller: emailController,
-                key: const Key('mailField'),
-                decoration: const InputDecoration(
-                  labelText: 'Email',
+              // Logo
+              const Image(
+                image: AssetImage('assets/logoG2.png'),
+                width: 200,
+                height: 200,
+              ),
+              // Form
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-              ),
-              TextFormField(
-                validator: Validatorless.required("Password is required"),
-                controller: passwordController,
-                key: const Key('passwordField'),
-                decoration: const InputDecoration(
-                  labelText: 'Password',
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        validator: Validatorless.multiple([
+                          Validatorless.required('Email is required'),
+                          Validatorless.email('Invalid email'),
+                        ]),
+                        controller: emailController,
+                        key: const Key('mailField'),
+                        decoration: const InputDecoration(
+                            labelText: 'Email', prefixIcon: Icon(Icons.email)),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        validator:
+                            Validatorless.required("Password is required"),
+                        controller: passwordController,
+                        key: const Key('passwordField'),
+                        decoration: const InputDecoration(
+                            labelText: 'Password',
+                            prefixIcon: Icon(Icons.lock)),
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor:
+                                  const Color.fromARGB(255, 77, 77, 160),
+                            ),
+                            onPressed: () async {
+                              try {
+                                if (emailController.text.isEmail &&
+                                    passwordController.text.isNotEmpty) {
+                                  await authenticationController.login(
+                                      emailController.text,
+                                      passwordController.text);
+                                  if (authenticationController
+                                      .errorMessage.value.isNotEmpty) {
+                                    // ignore: use_build_context_synchronously
+                                    showInvalidCredentialsDialog(
+                                        context,
+                                        authenticationController
+                                            .errorMessage.value);
+                                  }
+                                } else {
+                                  showInvalidCredentialsDialog(context, err);
+                                }
+                              } catch (error) {
+                                authenticationController.errorMessage.value =
+                                    error.toString();
+                              }
+                            },
+                            child: const Text('Login'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              try {
+                                if (emailController.text.isEmail &&
+                                    passwordController.text.isNotEmpty) {
+                                  await authenticationController.signup(
+                                      emailController.text,
+                                      passwordController.text);
+                                  if (authenticationController
+                                      .errorMessage.value.isNotEmpty) {
+                                    // ignore: use_build_context_synchronously
+                                    showInvalidCredentialsDialog(
+                                        context,
+                                        authenticationController
+                                            .errorMessage.value);
+                                  } else {
+                                    // ignore: use_build_context_synchronously
+                                    showSuccess(context);
+                                  }
+                                } else {
+                                  showInvalidCredentialsDialog(context, err);
+                                }
+                              } catch (error) {
+                                authenticationController.errorMessage.value =
+                                    error.toString();
+                              }
+                            },
+                            child: const Text("Register"),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                obscureText: true,
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    if (emailController.text.isEmail &&
-                        passwordController.text.isNotEmpty) {
-                      await authenticationController.login(
-                          emailController.text, passwordController.text);
-                      if (authenticationController
-                          .errorMessage.value.isNotEmpty) {
-                        // ignore: use_build_context_synchronously
-                        showInvalidCredentialsDialog(context,
-                            authenticationController.errorMessage.value);
-                      }
-                    } else {
-                      showInvalidCredentialsDialog(context, err);
-                    }
-                  } catch (error) {
-                    authenticationController.errorMessage.value =
-                        error.toString();
-                  }
-                },
-                child: const Text("Login"),
-              ),
-              TextButton(
-                onPressed: () async {
-                  try {
-                    if (emailController.text.isEmail &&
-                        passwordController.text.isNotEmpty) {
-                      await authenticationController.signup(
-                          emailController.text, passwordController.text);
-                      if (authenticationController
-                          .errorMessage.value.isNotEmpty) {
-                        // ignore: use_build_context_synchronously
-                        showInvalidCredentialsDialog(context,
-                            authenticationController.errorMessage.value);
-                      } else {
-                        // ignore: use_build_context_synchronously
-                        showSuccess(context);
-                      }
-                    } else {
-                      showInvalidCredentialsDialog(context, err);
-                    }
-                  } catch (error) {
-                    authenticationController.errorMessage.value =
-                        error.toString();
-                  }
-                },
-                child: const Text("Register"),
               ),
             ],
           ),
