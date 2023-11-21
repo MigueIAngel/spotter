@@ -1,4 +1,0 @@
-#Sun Nov 19 18:00:00 COT 2023
-base.0=C\:\\Users\\sebas\\OneDrive\\Escritorio\\f_firebase_202210-main\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
