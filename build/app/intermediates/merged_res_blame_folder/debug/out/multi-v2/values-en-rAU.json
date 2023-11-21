@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.f_firebase_202210.app-mergeDebugResources-15:/values-en-rAU/values-en-rAU.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\sebas\\.gradle\\caches\\transforms-3\\d777406e35f72c966ed92de083b4d3ab\\transformed\\core-1.9.0\\res\\values-en-rAU\\values-en-rAU.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "6",
+                        "startColumns": "4",
+                        "startOffsets": "458",
+                        "endColumns": "100",
+                        "endOffsets": "554"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\sebas\\.gradle\\caches\\transforms-3\\82c8a4d8a6468a2566d09a9d264fed66\\transformed\\browser-1.4.0\\res\\values-en-rAU\\values-en-rAU.xml",
+                    "from": {
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,153,250,359",
+                        "endColumns": "97,96,108,98",
+                        "endOffsets": "148,245,354,453"
+                    }
+                }
+            ]
+        }
+    ]
+}
