@@ -1,11 +1,9 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:f_firebase_202210/ui/controllers/authentication_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:loggy/loggy.dart';
 
 // ignore: constant_identifier_names
 const MAPBOX_ACCESS_TOKEN =
@@ -214,7 +212,7 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {}, child: Icon(Icons.my_location)),
+          onPressed: () {}, child: const Icon(Icons.my_location)),
     );
   }
 

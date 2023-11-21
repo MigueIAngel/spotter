@@ -7,7 +7,7 @@ import 'controllers/chat_controller.dart';
 import 'controllers/user_controller.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

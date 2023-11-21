@@ -25,5 +25,5 @@ Future<void> main() async {
         appId: Configuration.appId,
         measurementId: Configuration.measurementId),
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
