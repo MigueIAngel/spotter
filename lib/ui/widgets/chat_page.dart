@@ -7,10 +7,9 @@ import '../controllers/authentication_controller.dart';
 import '../controllers/chat_controller.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  const ChatPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _ChatPageState createState() => _ChatPageState();
 }
 
@@ -38,33 +37,15 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _item(Message element, int posicion, String uid) {
     logInfo('Current user? -> ${uid == element.user} msg -> ${element.text}');
-    return Container(
-      alignment:
-          uid == element.user ? Alignment.centerRight : Alignment.centerLeft,
-      child: ConstrainedBox(
-        constraints:
-            const BoxConstraints(maxWidth: 250), // Incrementamos ancho máximo
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12), // Border radius más grande
-          ),
-          margin: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 8, // Márgenes verticales más grandes
-          ),
-          color: uid == element.user ? const Color.fromARGB(255,70,70,160) : const Color(0xFF76A4D3),
-          elevation: 1,
-          child: Padding(
-            padding: const EdgeInsets.all(16), // Padding interno mayor
-            child: Text(
-              element.text,
-              style: TextStyle(
-                color: uid == element.user ? Colors.white : Colors.black,
-                fontSize: 16, // Texto más grande
-              ),
-              textAlign: uid == element.user ? TextAlign.right : TextAlign.left,
-            ),
-          ),
+    return Card(
+      margin: const EdgeInsets.all(4.0),
+      color: uid == element.user ? Colors.yellow[200] : Colors.grey[300],
+      child: ListTile(
+        onTap: () => chatController.updateMsg(element),
+        onLongPress: () => chatController.deleteMsg(element, posicion),
+        title: Text(
+          element.text,
+          textAlign: uid == element.user ? TextAlign.right : TextAlign.left,
         ),
       ),
     );
@@ -74,7 +55,7 @@ class _ChatPageState extends State<ChatPage> {
     String uid = authenticationController.getUid();
     logInfo('Current user $uid');
     return GetX<ChatController>(builder: (controller) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
+      WidgetsBinding.instance!.addPostFrameCallback((_) => _scrollToEnd());
       return ListView.builder(
         itemCount: chatController.messages.length,
         controller: _scrollController,
@@ -131,7 +112,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
+    WidgetsBinding.instance!.addPostFrameCallback((_) => _scrollToEnd());
     return Padding(
       padding: const EdgeInsets.fromLTRB(2.0, 2.0, 2.0, 25.0),
       child: Column(
