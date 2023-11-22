@@ -1,38 +1,40 @@
+import 'package:f_firebase_202210/ui/controllers/channel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loggy/loggy.dart';
 
 import '../../data/model/message.dart';
 import '../controllers/authentication_controller.dart';
-import '../controllers/chat_controller.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+class ChannelPage extends StatefulWidget {
+  final String ch;
+  const ChannelPage({super.key, required this.ch});
 
   @override
   // ignore: library_private_types_in_public_api
-  _ChatPageState createState() => _ChatPageState();
+  _ChannelPageState createState() => _ChannelPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChannelPageState extends State<ChannelPage> {
   late TextEditingController _controller;
   late ScrollController _scrollController;
-  ChatController chatController = Get.find();
+  ChannelController channelController = Get.find();
   AuthenticationController authenticationController = Get.find();
+  String get ch => widget.ch;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
     _scrollController = ScrollController();
-    chatController.start();
+    channelController.start(ch);
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
-    chatController.stop();
+    channelController.stop();
     super.dispose();
   }
 
@@ -52,7 +54,9 @@ class _ChatPageState extends State<ChatPage> {
             horizontal: 10,
             vertical: 8, // Márgenes verticales más grandes
           ),
-          color: uid == element.user ? const Color.fromARGB(255,70,70,160) : const Color(0xFF76A4D3),
+          color: uid == element.user
+              ? const Color.fromARGB(255, 70, 70, 160)
+              : const Color(0xFF76A4D3),
           elevation: 1,
           child: Padding(
             padding: const EdgeInsets.all(16), // Padding interno mayor
@@ -73,13 +77,13 @@ class _ChatPageState extends State<ChatPage> {
   Widget _list() {
     String uid = authenticationController.getUid();
     logInfo('Current user $uid');
-    return GetX<ChatController>(builder: (controller) {
+    return GetX<ChannelController>(builder: (controller) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
       return ListView.builder(
-        itemCount: chatController.messages.length,
+        itemCount: channelController.messages.length,
         controller: _scrollController,
         itemBuilder: (context, index) {
-          var element = chatController.messages[index];
+          var element = channelController.messages[index];
           return _item(element, index, uid);
         },
       );
@@ -89,7 +93,7 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> _sendMsg(String text) async {
     //FocusScope.of(context).requestFocus(FocusNode());
     logInfo("Calling _sendMsg with $text");
-    await chatController.sendMsg(text);
+    await channelController.sendMsg(text, ch);
   }
 
   Widget _textInput() {
@@ -134,8 +138,30 @@ class _ChatPageState extends State<ChatPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
     return Padding(
       padding: const EdgeInsets.fromLTRB(2.0, 2.0, 2.0, 25.0),
-      child: Column(
-        children: [Expanded(flex: 4, child: _list()), _textInput()],
+      child: Material(
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: const Color.fromARGB(255, 77, 77, 160),
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              title: const Center(
+                  child: Text('Chat del evento',
+                      style: TextStyle(fontSize: 30, color: Colors.white))),
+            ),
+            body: Column(
+              children: [Expanded(flex: 4, child: _list()), _textInput()],
+            )),
       ),
     );
   }

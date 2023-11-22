@@ -1,3 +1,4 @@
+import 'package:f_firebase_202210/ui/controllers/channel_controller.dart';
 import 'package:f_firebase_202210/ui/controllers/firestore_controller.dart';
 import 'package:f_firebase_202210/ui/firebase_cental.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
     Get.put(AuthenticationController());
     Get.put(UserController());
     Get.put(FirestoreController());
+    Get.put(ChannelController());
     return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Firebase demo',

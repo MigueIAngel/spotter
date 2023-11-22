@@ -86,12 +86,14 @@ class _MapScreenState extends State<MapScreen> {
         .child('events')
         .onChildAdded
         .listen((event) {
+      print("added mapa");
       loadMarkersFromDatabase();
     });
     firestoreController.databaseRef
         .child('events')
         .onChildRemoved
         .listen((event) {
+      print("removed mapa");
       loadMarkersFromDatabase();
     });
   }
@@ -142,7 +144,7 @@ class _MapScreenState extends State<MapScreen> {
     List<Marker> filteredMarkers = [];
     filteredMarkers.add(await getCurrentLocation());
     for (Evento evento in events) {
-      DateTime eventDate = DateTime.parse("${evento.fecha} 00:00:00.000000");
+      DateTime eventDate = DateTime.parse("${evento.fecha} 23:59:00.000000");
       if (eventDate.isAfter(currentDate) ||
           eventDate.isAtSameMomentAs(currentDate)) {
         filteredMarkers.add(
@@ -161,10 +163,11 @@ class _MapScreenState extends State<MapScreen> {
         );
       }
     }
-
-    setState(() {
-      markerss = filteredMarkers;
-    });
+    if (mounted) {
+      setState(() {
+        markerss = filteredMarkers;
+      });
+    }
   }
 
   void _handleMapTap(LatLng tappedPoint) {
@@ -249,18 +252,20 @@ class _MapScreenState extends State<MapScreen> {
               calculateDistance(LatLng(latitud, longitud), tappedPoint);
           if (distance < 30 &&
               eventDate.isAtSameMomentAs(
-                  DateTime.parse('${fecha.text} 00:00:00.000000'))) {
+                  DateTime.parse('${fecha.text} 23:59:00.000000'))) {
             tooClose = true;
           }
         }
 
         if (!tooClose) {
-          setState(() {
-            Evento e = Evento(name.text, fecha.text, description.text,
-                '${tappedPoint.latitude},${tappedPoint.longitude}');
-            _saveEvent(e);
-            loadMarkersFromDatabase();
-          });
+          if (mounted) {
+            setState(() {
+              Evento e = Evento(name.text, fecha.text, description.text,
+                  '${tappedPoint.latitude},${tappedPoint.longitude}');
+              _saveEvent(e);
+              loadMarkersFromDatabase();
+            });
+          }
         } else {
           // ignore: use_build_context_synchronously
           showDialog(

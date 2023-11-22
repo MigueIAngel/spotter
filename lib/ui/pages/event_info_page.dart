@@ -1,6 +1,10 @@
+import 'package:f_firebase_202210/ui/widgets/channel_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class EventInfoPage extends StatelessWidget {
+  final String k;
   final String eventTitle;
   final String eventImage;
   final String eventDate;
@@ -10,6 +14,7 @@ class EventInfoPage extends StatelessWidget {
 
   const EventInfoPage({
     super.key,
+    required this.k,
     required this.eventTitle,
     required this.eventImage,
     required this.eventDate,
@@ -91,7 +96,16 @@ class EventInfoPage extends StatelessWidget {
                               backgroundColor:
                                   const Color.fromARGB(255, 77, 77, 160),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChannelPage(
+                                    ch: k,
+                                  ),
+                                ),
+                              );
+                            },
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -138,7 +152,45 @@ class EventInfoPage extends StatelessWidget {
             // Mapa
             Container(
               height: 300,
-              child: const Placeholder(), // aquí iría el mapa
+              child: FlutterMap(
+                options: MapOptions(
+                  center: LatLng(
+                    double.parse(eventLocation.split(',')[0]),
+                    double.parse(eventLocation.split(',')[1]),
+                  ),
+                  minZoom: 5,
+                  maxZoom: 100,
+                  zoom: 14,
+                ),
+                nonRotatedChildren: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                    additionalOptions: const {
+                      'accessToken':
+                          'sk.eyJ1IjoibWFuZ2VsMjEiLCJhIjoiY2xwN2h3czduMTJkYzJtcWx2N3Q5OHM0eSJ9.wbYcARI6G-0s76whD7gkvQ',
+                      'id': 'mapbox/streets-v12',
+                    },
+                  ),
+                  MarkerLayer(markers: [
+                    Marker(
+                      width: 80.0,
+                      height: 80.0,
+                      point: LatLng(
+                        double.parse(eventLocation.split(',')[0]),
+                        double.parse(eventLocation.split(',')[1]),
+                      ),
+                      builder: (ctx) => Container(
+                        child: const Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                          size: 50,
+                        ),
+                      ),
+                    )
+                  ]),
+                ],
+              ), // aquí iría el mapa
             ),
           ],
         ),
