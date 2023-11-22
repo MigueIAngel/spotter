@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 class AuthenticationController extends GetxController {
   final databaseRef = FirebaseDatabase.instance.ref();
   var errorMessage = RxString('');
+  var errorSign = RxString('');
   Future<void> login(email, password) async {
     try {
       await FirebaseAuth.instance
@@ -20,6 +21,14 @@ class AuthenticationController extends GetxController {
       } else if (e.code == 'wrong-password') {
         errorMessage.value = 'Wrong password';
         throw errorMessage.value; // Lanzar la excepción
+      } else if (e.code == 'invalid-credential') {
+        errorMessage.value = "Invalid Credentials";
+        throw errorMessage.value;
+      } else if (e.code == "too-many-requests") {
+        errorMessage.value =
+            "You have been blocked temporaly by too many requests";
+      } else {
+        print(e.code);
       }
     }
   }
@@ -31,15 +40,17 @@ class AuthenticationController extends GetxController {
 
       UserController userController = Get.find();
       await userController.createUser(email, uc.user!.uid);
-      errorMessage.value = "";
+      errorSign.value = "";
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'Password should be at least 6 characters') {
-        errorMessage.value = "The password is too weak";
-        throw errorMessage.value;
-      } else if (e.code ==
-          'The email address is already in use by another account.') {
-        errorMessage.value = "The email is taken";
-        throw errorMessage.value;
+      if (e.code == 'weak-password') {
+        errorSign.value = "The password is too weak";
+        throw errorSign.value;
+      } else if (e.code == 'email-already-in-use') {
+        errorSign.value = "The email is taken";
+
+        throw errorSign.value;
+      } else {
+        print(e.code);
       }
     }
   }

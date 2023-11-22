@@ -40,21 +40,19 @@ class _MapScreenState extends State<MapScreen> {
     return await Geolocator.getCurrentPosition();
   }
 
-  void getCurrentLocation() async {
+  Future<Marker> getCurrentLocation() async {
     Position position = await determinePosition();
-    setState(() {
-      myPosition = LatLng(position.latitude, position.longitude);
-      markerss.add(
-        Marker(
-          point: myPosition!,
-          builder: (context) => const Icon(
-            Icons.person_pin,
-            color: Colors.blueAccent,
-            size: 40,
-          ),
-        ),
-      );
-    });
+
+    myPosition = LatLng(position.latitude, position.longitude);
+
+    return Marker(
+      point: myPosition!,
+      builder: (context) => const Icon(
+        Icons.person_pin,
+        color: Colors.blueAccent,
+        size: 40,
+      ),
+    );
   }
 
   void _showMarkerDetails(Evento evento) {
@@ -83,6 +81,21 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  void listenToEvents() async {
+    firestoreController.databaseRef
+        .child('events')
+        .onChildAdded
+        .listen((event) {
+      loadMarkersFromDatabase();
+    });
+    firestoreController.databaseRef
+        .child('events')
+        .onChildRemoved
+        .listen((event) {
+      loadMarkersFromDatabase();
+    });
+  }
+
   void moveToCurrentLocation() async {
     Position position = await determinePosition();
     mapController.move(LatLng(position.latitude, position.longitude), 18);
@@ -94,6 +107,7 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     firestoreController.start();
     loadMarkersFromDatabase();
+    listenToEvents();
   }
 
   Future<void> _saveEvent(Evento e) async {
@@ -126,7 +140,7 @@ class _MapScreenState extends State<MapScreen> {
 
     List<Evento> events = await firestoreController.getAll();
     List<Marker> filteredMarkers = [];
-
+    filteredMarkers.add(await getCurrentLocation());
     for (Evento evento in events) {
       DateTime eventDate = DateTime.parse("${evento.fecha} 00:00:00.000000");
       if (eventDate.isAfter(currentDate) ||
@@ -155,7 +169,9 @@ class _MapScreenState extends State<MapScreen> {
 
   void _handleMapTap(LatLng tappedPoint) {
     bool saved = false;
-
+    fecha.text = "";
+    name.text = "";
+    description.text = "";
     showDialog(
         context: context,
         builder: (context) {
@@ -224,7 +240,7 @@ class _MapScreenState extends State<MapScreen> {
         List<Evento> events = await firestoreController.getAll();
         for (Evento evento in events) {
           DateTime eventDate =
-              DateTime.parse("${evento.fecha} 00:00:00.000000");
+              DateTime.parse("${evento.fecha} 23:59:59.000000");
           String lat = evento.ubicacion.split(',')[0];
           String lon = evento.ubicacion.split(',')[1];
           double latitud = double.parse(lat);
@@ -291,7 +307,10 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {}, child: const Icon(Icons.my_location)),
+          onPressed: () {
+            moveToCurrentLocation();
+          },
+          child: const Icon(Icons.my_location)),
     );
   }
 

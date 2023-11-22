@@ -1,9 +1,8 @@
-import 'package:f_firebase_202210/ui/controllers/user_controller.dart';
+import 'package:f_firebase_202210/ui/controllers/firestore_controller.dart';
 import 'package:f_firebase_202210/ui/widgets/event_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../data/model/app_user.dart';
+import '../../data/model/events.dart';
 
 class UserListPage extends StatefulWidget {
   const UserListPage({Key? key}) : super(key: key);
@@ -13,134 +12,42 @@ class UserListPage extends StatefulWidget {
 }
 
 class _UserListPageState extends State<UserListPage> {
-  UserController userController = Get.find();
+  FirestoreController firestoreController = Get.find();
 
   @override
   void initState() {
-    userController.start();
+    firestoreController.start();
     super.initState();
   }
 
   @override
   void dispose() {
-    userController.stop();
+    firestoreController.stop();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        children: [
-          GestureDetector(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => EventInfoPage(index: 0)),
-              // );
-            },
-            child: const EventItem(
-                name: 'Concierto de Rock',
-                distance: '3 km',
+      body: Obx(
+        () => ListView.builder(
+          itemCount: firestoreController.markers.length,
+          itemBuilder: (context, index) {
+            Evento event = firestoreController.markers[index];
+            return GestureDetector(
+              onTap: () {
+                // Handle tap event, e.g., navigate to event details page
+              },
+              child: EventItem(
+                name: event.nombre,
+                distance: '3 km', // You might want to get the actual distance
                 image: 'assets/rock.jpeg',
-                index: 0),
-          ),
-          GestureDetector(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => EventInfoPage(index: 0)),
-              // );
-            },
-            child: const EventItem(
-                name: 'Concierto de Rock',
-                distance: '3 km',
-                image: 'assets/rock.jpeg',
-                index: 1),
-          ),
-          GestureDetector(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => EventInfoPage(index: 0)),
-              // );
-            },
-            child: const EventItem(
-                name: 'Concierto de Rock',
-                distance: '3 km',
-                image: 'assets/rock.jpeg',
-                index: 2),
-          ),
-          GestureDetector(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => EventInfoPage(index: 0)),
-              // );
-            },
-            child: const EventItem(
-                name: 'Concierto de Rock',
-                distance: '3 km',
-                image: 'assets/rock.jpeg',
-                index: 3),
-          ),
-          GestureDetector(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => EventInfoPage(index: 0)),
-              // );
-            },
-            child: const EventItem(
-                name: 'Concierto de Rock',
-                distance: '3 km',
-                image: 'assets/rock.jpeg',
-                index: 4),
-          ),
-          GestureDetector(
-            onTap: () {},
-            child: const EventItem(
-                name: 'Concierto de Rock',
-                distance: '3 km',
-                image: 'assets/rock.jpeg',
-                index: 5),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _item(AppUser element) {
-    return Card(
-      margin: const EdgeInsets.all(4.0),
-      child: ListTile(
-        title: Text(
-          element.email,
+                index: index,
+              ),
+            );
+          },
         ),
-        subtitle: Text(element.uid),
       ),
     );
-  }
-
-  Widget _list() {
-    return GetX<UserController>(builder: (controller) {
-      if (userController.users.length == 0) {
-        return const Center(
-          child: Text('No users'),
-        );
-      }
-      return ListView.builder(
-        itemCount: userController.users.length,
-        itemBuilder: (context, index) {
-          var element = userController.users[index];
-          return _item(element);
-        },
-      );
-    });
   }
 }

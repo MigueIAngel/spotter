@@ -16,6 +16,7 @@ class EventInfoPage extends StatelessWidget {
     required this.eventTime,
     required this.eventDescription,
     required this.eventLocation,
+    required int index,
   });
 
   @override
@@ -32,7 +33,7 @@ class EventInfoPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-              ),              
+              ),
             ],
           ),
         ),
@@ -103,7 +104,8 @@ class EventInfoPage extends StatelessWidget {
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              backgroundColor: const Color.fromARGB(255, 77, 77, 160),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 77, 77, 160),
                             ),
                             onPressed: () {},
                             child: const Row(

@@ -60,6 +60,7 @@ class LoginPage extends StatelessWidget {
 
   void showInvalidCredentialsDialog(BuildContext context, String e) {
     String msg = "";
+    print("entorea");
     switch (e) {
       case "User not found":
         msg = "User Credentials Error.";
@@ -67,11 +68,18 @@ class LoginPage extends StatelessWidget {
       case "":
         msg = "Please enter a valid email and password.";
         break;
+      case "You have been blocked temporaly by too many requests":
+        msg = "You have been blocked temporaly by too many requests";
+        break;
       case "The email is taken":
+        print("qqad");
         msg = "The email already exits";
         break;
       case "The password is too weak":
         msg = "The password is too weak.";
+        break;
+      case "Invalid Credentials":
+        msg = "User Credentials are invalid";
         break;
       default:
         msg = "Unexpected error. ";
@@ -183,20 +191,20 @@ class LoginPage extends StatelessWidget {
                                   await authenticationController.login(
                                       emailController.text,
                                       passwordController.text);
-                                  if (authenticationController
-                                      .errorMessage.value.isNotEmpty) {
-                                    // ignore: use_build_context_synchronously
-                                    showInvalidCredentialsDialog(
-                                        context,
-                                        authenticationController
-                                            .errorMessage.value);
-                                  }
                                 } else {
                                   showInvalidCredentialsDialog(context, err);
                                 }
                               } catch (error) {
                                 authenticationController.errorMessage.value =
                                     error.toString();
+                                if (authenticationController
+                                    .errorMessage.value.isNotEmpty) {
+                                  // ignore: use_build_context_synchronously
+                                  showInvalidCredentialsDialog(
+                                      context,
+                                      authenticationController
+                                          .errorMessage.value);
+                                }
                               }
                             },
                             child: const Text('Login'),
@@ -209,23 +217,21 @@ class LoginPage extends StatelessWidget {
                                   await authenticationController.signup(
                                       emailController.text,
                                       passwordController.text);
-                                  if (authenticationController
-                                      .errorMessage.value.isNotEmpty) {
-                                    // ignore: use_build_context_synchronously
-                                    showInvalidCredentialsDialog(
-                                        context,
-                                        authenticationController
-                                            .errorMessage.value);
-                                  } else {
-                                    // ignore: use_build_context_synchronously
-                                    showSuccess(context);
-                                  }
                                 } else {
                                   showInvalidCredentialsDialog(context, err);
                                 }
                               } catch (error) {
-                                authenticationController.errorMessage.value =
+                                authenticationController.errorSign.value =
                                     error.toString();
+                                if (authenticationController
+                                    .errorSign.value.isNotEmpty) {
+                                  // ignore: use_build_context_synchronously
+                                  showInvalidCredentialsDialog(context,
+                                      authenticationController.errorSign.value);
+                                } else {
+                                  // ignore: use_build_context_synchronously
+                                  showSuccess(context);
+                                }
                               }
                             },
                             child: const Text("Register"),
