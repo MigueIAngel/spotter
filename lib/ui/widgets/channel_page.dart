@@ -59,16 +59,32 @@ class _ChannelPageState extends State<ChannelPage> {
               : const Color(0xFF76A4D3),
           elevation: 1,
           child: Padding(
-            padding: const EdgeInsets.all(16), // Padding interno mayor
-            child: Text(
-              element.text,
-              style: TextStyle(
-                color: uid == element.user ? Colors.white : Colors.black,
-                fontSize: 16, // Texto más grande
-              ),
-              textAlign: uid == element.user ? TextAlign.right : TextAlign.left,
-            ),
-          ),
+              padding: const EdgeInsets.all(16), // Padding interno mayor
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    element.text.split('\n')[0],
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: uid == element.user ? Colors.amber : Colors.white,
+                    ),
+                    textAlign:
+                        uid == element.user ? TextAlign.right : TextAlign.left,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    element.text.split('\n')[1],
+                    style: TextStyle(
+                      color: uid == element.user ? Colors.white : Colors.black,
+                      fontSize: 16, // Texto más grande
+                    ),
+                    textAlign:
+                        uid == element.user ? TextAlign.right : TextAlign.left,
+                  ),
+                ],
+              )),
         ),
       ),
     );
@@ -110,8 +126,12 @@ class _ChannelPageState extends State<ChannelPage> {
                 labelText: 'Your message',
               ),
               onSubmitted: (value) {
-                _sendMsg(_controller.text);
-                _controller.clear();
+                if (_controller.text.isNotEmpty) {
+                  _sendMsg(_controller.text);
+                  _controller.clear();
+                } else {
+                  logInfo('Empty message');
+                }
               },
               controller: _controller,
             ),
@@ -121,8 +141,12 @@ class _ChannelPageState extends State<ChannelPage> {
             key: const Key('sendButton'),
             child: const Text('Send'),
             onPressed: () {
-              _sendMsg(_controller.text);
-              _controller.clear();
+              if (_controller.text.isNotEmpty) {
+                _sendMsg(_controller.text);
+                _controller.clear();
+              } else {
+                logInfo('Empty message');
+              }
             })
       ],
     );

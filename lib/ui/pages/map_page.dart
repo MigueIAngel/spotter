@@ -86,14 +86,12 @@ class _MapScreenState extends State<MapScreen> {
         .child('events')
         .onChildAdded
         .listen((event) {
-      print("added mapa");
       loadMarkersFromDatabase();
     });
     firestoreController.databaseRef
         .child('events')
         .onChildRemoved
         .listen((event) {
-      print("removed mapa");
       loadMarkersFromDatabase();
     });
   }
@@ -144,9 +142,10 @@ class _MapScreenState extends State<MapScreen> {
     List<Marker> filteredMarkers = [];
     filteredMarkers.add(await getCurrentLocation());
     for (Evento evento in events) {
-      DateTime eventDate = DateTime.parse("${evento.fecha} 23:59:00.000000");
-      if (eventDate.isAfter(currentDate) ||
-          eventDate.isAtSameMomentAs(currentDate)) {
+      DateTime eventDate = DateTime.parse("${evento.fecha} 00:00:00.000000");
+      if (eventDate.day == currentDate.day &&
+          eventDate.month == currentDate.month &&
+          eventDate.year == currentDate.year) {
         filteredMarkers.add(
           Marker(
             point: LatLng(
@@ -154,6 +153,22 @@ class _MapScreenState extends State<MapScreen> {
               double.parse(evento.ubicacion.split(',')[1]),
             ),
             builder: (context) => InkWell(
+              onLongPress: () {
+                if (evento.user == authenticationController.getUid()) {
+                  firestoreController.deleteEvent(
+                      evento, events.indexOf(evento));
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const AlertDialog(
+                          title: Text("Error al eliminar evento"),
+                          content: Text(
+                              "No se puede eliminar el evento porque no es tuyo"),
+                        );
+                      });
+                }
+              },
               onTap: () {
                 _showMarkerDetails(evento);
               },
@@ -250,33 +265,63 @@ class _MapScreenState extends State<MapScreen> {
           double longitud = double.parse(lon);
           double distance =
               calculateDistance(LatLng(latitud, longitud), tappedPoint);
-          if (distance < 30 &&
-              eventDate.isAtSameMomentAs(
-                  DateTime.parse('${fecha.text} 23:59:00.000000'))) {
+
+          if (distance < 50 &&
+              eventDate.day == DateTime.parse(fecha.text).day &&
+              eventDate.month == DateTime.parse(fecha.text).month &&
+              eventDate.year == DateTime.parse(fecha.text).year) {
             tooClose = true;
           }
         }
 
         if (!tooClose) {
-          if (mounted) {
-            setState(() {
-              Evento e = Evento(name.text, fecha.text, description.text,
-                  '${tappedPoint.latitude},${tappedPoint.longitude}');
-              _saveEvent(e);
-              loadMarkersFromDatabase();
-            });
-          }
+          setState(() {
+            Evento e = Evento(name.text, fecha.text, description.text,
+                '${tappedPoint.latitude},${tappedPoint.longitude}');
+            _saveEvent(e);
+            loadMarkersFromDatabase();
+          });
         } else {
           // ignore: use_build_context_synchronously
           showDialog(
-              context: context,
-              builder: (context) {
-                return const AlertDialog(
-                  title: Text("Error al crear evento"),
-                  content: Text(
-                      "No se puede crear el evento porque ya existe uno cerca"),
-                );
-              });
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                titleTextStyle: const TextStyle(
+                  color: Colors.blue, // Color del texto del título
+                  fontSize: 22.0, // Tamaño del texto del título
+                  fontWeight: FontWeight.bold, // Peso del texto del título
+                ),
+                contentTextStyle: const TextStyle(
+                  color: Colors.black, // Color del texto del contenido
+                  fontSize: 18.0, // Tamaño del texto del contenido
+                ),
+                title: const Text('Oops!'),
+                content: const Text(
+                  "No se puede crear el evento porque ya existe uno cerca en la fecha seleccionada",
+                  textAlign: TextAlign.center,
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(
+                        color: Colors.blue, // Color del texto del botón
+                        fontWeight: FontWeight.bold, // Peso del texto del botón
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
         }
       }
     });

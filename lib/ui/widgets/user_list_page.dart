@@ -16,6 +16,8 @@ class UserListPage extends StatefulWidget {
 class _UserListPageState extends State<UserListPage> {
   FirestoreController firestoreController = Get.find();
   LatLng? myPosition;
+  bool charge = false;
+  final km = TextEditingController();
   List<Evento> events = [];
   @override
   void initState() {
@@ -46,6 +48,94 @@ class _UserListPageState extends State<UserListPage> {
     });
   }
 
+  void _handleTapbutton() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            titleTextStyle: const TextStyle(
+              color: Colors.blue, // Color del texto del título
+              fontSize: 22.0, // Tamaño del texto del título
+              fontWeight: FontWeight.bold, // Peso del texto del título
+            ),
+            contentTextStyle: const TextStyle(
+              color: Colors.black, // Color del texto del contenido
+              fontSize: 18.0, // Tamaño del texto del contenido
+            ),
+            title: const Text('Cambio de parametros'),
+            content: TextField(
+                controller: km,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  hintText: "Distancia en kilometos",
+                )),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar')),
+              TextButton(
+                  onPressed: () async {
+                    if (km.text.isNotEmpty && km.text.isNum) {
+                      Navigator.pop(context);
+                      charge = true;
+                      await loadMarkersFromDatabase();
+                      charge = false;
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            titleTextStyle: const TextStyle(
+                              color: Colors.blue, // Color del texto del título
+                              fontSize: 22.0, // Tamaño del texto del título
+                              fontWeight:
+                                  FontWeight.bold, // Peso del texto del título
+                            ),
+                            contentTextStyle: const TextStyle(
+                              color:
+                                  Colors.black, // Color del texto del contenido
+                              fontSize: 18.0, // Tamaño del texto del contenido
+                            ),
+                            title: const Text('Oops!'),
+                            content: const Text(
+                              "Introduzca una distancia en kilometros",
+                              textAlign: TextAlign.center,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text(
+                                  'OK',
+                                  style: TextStyle(
+                                    color: Colors
+                                        .blue, // Color del texto del botón
+                                    fontWeight: FontWeight
+                                        .bold, // Peso del texto del botón
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: const Text('Aceptar')),
+            ],
+          );
+        });
+  }
+
   Future<void> loadMarkersFromDatabase() async {
     DateTime currentDate = DateTime.now();
 
@@ -58,10 +148,15 @@ class _UserListPageState extends State<UserListPage> {
               double.parse(evento.ubicacion.split(',')[1])),
           myPosition == null ? LatLng(0, 0) : myPosition!);
       DateTime eventDate = DateTime.parse("${evento.fecha} 23:59:00.000000");
-      if ((eventDate.isAfter(currentDate) ||
-              eventDate.isAtSameMomentAs(currentDate)) &&
-          distance < 50000) {
-        filteredEvents.add(evento);
+      if (eventDate.isAfter(currentDate) ||
+          eventDate.isAtSameMomentAs(currentDate)) {
+        if (km.text.isNotEmpty && km.text.isNum) {
+          if (distance < double.parse(km.text) * 1000) {
+            filteredEvents.add(evento);
+          }
+        } else if (distance < 50000) {
+          filteredEvents.add(evento);
+        }
       }
     }
     if (mounted) {
@@ -101,7 +196,7 @@ class _UserListPageState extends State<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return myPosition == null
+    return (myPosition == null || charge)
         ? const Center(child: CircularProgressIndicator())
         : Scaffold(
             body: ListView.builder(
@@ -139,6 +234,10 @@ class _UserListPageState extends State<UserListPage> {
                 );
               },
             ),
+            floatingActionButton: FloatingActionButton(
+                onPressed: () => _handleTapbutton(),
+                backgroundColor: const Color.fromARGB(255, 77, 77, 160),
+                child: const Icon(Icons.edit_location_rounded)),
           );
   }
 }

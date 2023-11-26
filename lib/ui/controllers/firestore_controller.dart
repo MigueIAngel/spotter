@@ -75,6 +75,7 @@ class FirestoreController extends GetxController {
       databaseRef.child('events').child(element.key!).remove().then(
             (value) => markers.removeAt(posicion),
           );
+      print("remove event");
     } catch (error) {
       logError(error);
       return Future.error(error);

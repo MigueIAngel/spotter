@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:f_firebase_202210/ui/controllers/authentication_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
@@ -14,12 +15,16 @@ class ChannelController extends GetxController {
 
   late StreamSubscription<DatabaseEvent> newEntryStreamSubscription;
 
+  final AuthenticationController authenticationController = Get.find();
+
   void start(String ch) {
     messages.clear();
 
-    newEntryStreamSubscription =
-        databaseRef.child("chanel").child(ch).onChildAdded.listen(_onEntryAdded);
-    
+    newEntryStreamSubscription = databaseRef
+        .child("chanel")
+        .child(ch)
+        .onChildAdded
+        .listen(_onEntryAdded);
   }
 
   void stop() {
@@ -34,7 +39,10 @@ class ChannelController extends GetxController {
   Future<void> sendMsg(String text, String ch) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     try {
-      databaseRef.child('chanel').child(ch).push().set({'text': text, 'uid': uid});
+      databaseRef.child('chanel').child(ch).push().set({
+        'text': '${authenticationController.userEmail().split('@')[0]}\n $text',
+        'uid': uid
+      });
     } catch (error) {
       logError(error);
       return Future.error(error);

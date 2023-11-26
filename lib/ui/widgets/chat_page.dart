@@ -52,19 +52,37 @@ class _ChatPageState extends State<ChatPage> {
             horizontal: 10,
             vertical: 8, // Márgenes verticales más grandes
           ),
-          color: uid == element.user ? const Color.fromARGB(255,70,70,160) : const Color(0xFF76A4D3),
+          color: uid == element.user
+              ? const Color.fromARGB(255, 70, 70, 160)
+              : const Color(0xFF76A4D3),
           elevation: 1,
           child: Padding(
-            padding: const EdgeInsets.all(16), // Padding interno mayor
-            child: Text(
-              element.text,
-              style: TextStyle(
-                color: uid == element.user ? Colors.white : Colors.black,
-                fontSize: 16, // Texto más grande
-              ),
-              textAlign: uid == element.user ? TextAlign.right : TextAlign.left,
-            ),
-          ),
+              padding: const EdgeInsets.all(16), // Padding interno mayor
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    element.text.split('\n')[0],
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: uid == element.user ? Colors.amber : Colors.white,
+                    ),
+                    textAlign:
+                        uid == element.user ? TextAlign.right : TextAlign.left,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    element.text.split('\n')[1],
+                    style: TextStyle(
+                      color: uid == element.user ? Colors.white : Colors.black,
+                      fontSize: 16, // Texto más grande
+                    ),
+                    textAlign:
+                        uid == element.user ? TextAlign.right : TextAlign.left,
+                  ),
+                ],
+              )),
         ),
       ),
     );
@@ -106,8 +124,12 @@ class _ChatPageState extends State<ChatPage> {
                 labelText: 'Your message',
               ),
               onSubmitted: (value) {
-                _sendMsg(_controller.text);
-                _controller.clear();
+                if (_controller.text.isNotEmpty) {
+                  _sendMsg(_controller.text);
+                  _controller.clear();
+                } else {
+                  logInfo('Empty message');
+                }
               },
               controller: _controller,
             ),
@@ -117,8 +139,12 @@ class _ChatPageState extends State<ChatPage> {
             key: const Key('sendButton'),
             child: const Text('Send'),
             onPressed: () {
-              _sendMsg(_controller.text);
-              _controller.clear();
+              if (_controller.text.isNotEmpty) {
+                _sendMsg(_controller.text);
+                _controller.clear();
+              } else {
+                logInfo('Empty message');
+              }
             })
       ],
     );

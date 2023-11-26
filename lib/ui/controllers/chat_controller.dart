@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:f_firebase_202210/ui/controllers/authentication_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,8 @@ import '../../data/model/message.dart';
 
 class ChatController extends GetxController {
   var messages = <Message>[].obs;
+
+  AuthenticationController authenticationController = Get.find();
 
   final databaseRef = FirebaseDatabase.instance.ref();
 
@@ -61,7 +64,10 @@ class ChatController extends GetxController {
   Future<void> sendMsg(String text) async {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     try {
-      databaseRef.child('msg').push().set({'text': text, 'uid': uid});
+      databaseRef.child('msg').push().set({
+        'text': '${authenticationController.userEmail().split('@')[0]}\n $text',
+        'uid': uid,
+      });
     } catch (error) {
       logError(error);
       return Future.error(error);

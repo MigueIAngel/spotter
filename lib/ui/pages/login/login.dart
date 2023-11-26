@@ -60,7 +60,6 @@ class LoginPage extends StatelessWidget {
 
   void showInvalidCredentialsDialog(BuildContext context, String e) {
     String msg = "";
-    print("entorea");
     switch (e) {
       case "User not found":
         msg = "User Credentials Error.";
@@ -128,8 +127,6 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    emailController.text = "a@a.com";
-    passwordController.text = "123456789";
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: SafeArea(

@@ -13,8 +13,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ChatController());
     Get.put(AuthenticationController());
+    Get.put(ChatController());
     Get.put(UserController());
     Get.put(FirestoreController());
     Get.put(ChannelController());
